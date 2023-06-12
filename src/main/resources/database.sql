@@ -1,0 +1,10 @@
+CREATE DATABASE livraria;
+
+CREATE TABLE livro (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `isbn` VARCHAR(17) NOT NULL,
+  `titulo` VARCHAR(20) NOT NULL,
+  `autor` VARCHAR(20) NOT NULL,
+  `editora` VARCHAR(20) NOT NULL,
+  CONSTRAINT pk_livro PRIMARY KEY(id)
+);
