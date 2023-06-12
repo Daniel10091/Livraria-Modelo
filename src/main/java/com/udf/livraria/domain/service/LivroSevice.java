@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.udf.livraria.domain.exception.LivroNotFoundException;
 import com.udf.livraria.domain.model.Livro;
 import com.udf.livraria.domain.repository.LivroRepository;
 
@@ -34,8 +35,28 @@ public class LivroSevice {
 
   // Atualiza um livro no banco de dados
   public Livro atualizar(Livro livro) {
-    // Código...
-    return repository.save(livro);
+    Livro livroSalvo = null;
+    Livro livroAtualizado = null;
+    // Verifica se o livro a ser salvo contém id
+    if (livro.getId() == null) {
+      // Busca o livro no banco de dados
+      livroAtualizado = repository.findById(livro.getId()).get();
+      // Verifica se o livro foi encontrado
+      if (livroAtualizado != null) {
+        // Atualiza o livro
+        livroAtualizado.setIsbn(livro.getIsbn());
+        livroAtualizado.setTitulo(livro.getTitulo());
+        livroAtualizado.setAutor(livro.getAutor());
+        livroAtualizado.setEditora(livro.getEditora());
+      } else {
+        // Dispara uma excessão caso o livro não for encontrado
+        throw new LivroNotFoundException("O livro com o id '" + livro.getId() + "' não foi encontrado");
+      }
+      // Salva o livro no banco de dados
+      livroSalvo = repository.save(livroAtualizado);
+    }
+    // Retorna o livro salvo
+    return livroSalvo;
   }
 
   // Deleta um livro do banco de dados

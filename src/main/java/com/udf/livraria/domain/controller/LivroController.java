@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/livro")
+@RequestMapping("/livraria")
 public class LivroController {
   
   private final LivroSevice service;
@@ -26,7 +26,7 @@ public class LivroController {
     this.service = service;
   }
 
-  @GetMapping(value="/listarTodos")
+  @GetMapping(value="/listar")
   public ResponseEntity<List<Livro>> listarTodos() {
     // Busca todos os livros
     List<Livro> livros = service.listarTodos();
@@ -34,7 +34,7 @@ public class LivroController {
     return ResponseEntity.ok(livros);
   }
   
-  @GetMapping(value="/buscarPorId")
+  @GetMapping(value="/buscar")
   public ResponseEntity<Livro> buscarPorId(@RequestParam(value="id") Long id) {
     // Busca o livro pelo id
     Livro livro = service.buscarPorId(id);
@@ -42,7 +42,7 @@ public class LivroController {
     return ResponseEntity.ok(livro);
   }
 
-  @PostMapping("/salvar")
+  @PostMapping("/cadastrar")
   public ResponseEntity<Livro> cadastrar(@RequestBody Livro livro) {
     // Salva o livro
     Livro livroSalvo = service.cadastrar(livro);
