@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.udf.livraria.domain.exception.LivroAlreadyExistException;
 import com.udf.livraria.domain.exception.LivroNotFoundException;
 import com.udf.livraria.domain.model.Livro;
 import com.udf.livraria.domain.repository.LivroRepository;
@@ -24,12 +25,28 @@ public class LivroSevice {
 
   // Busca um livro pelo id
   public Livro buscarPorId(Long id) {
-    return repository.findById(id).get();
+    // Retorna a consulta do livro no banco de dados atravéz do id e, caso não encotre, dispara uma excessão
+    return repository.findLivroById(id)
+        .orElseThrow(() -> new LivroNotFoundException("O livro com o id '" + id + "' não foi encontrado"));
+  }
+
+  // Busca um livro pelo titulo
+  public Livro filtraPorTitulo(String titulo) {
+    // Retorna a consulta do livro no banco de dados atravéz do titulo e, caso não encotre, dispara uma excessão
+    return repository.findLivroByTitulo(titulo)
+        .orElseThrow(() -> new LivroNotFoundException("O livro com o titulo '" + titulo + "' não foi encontrado"));
   }
 
   // Cadastra um livro no banco de dados
   public Livro cadastrar(Livro livro) {
-    // Código...
+    // Busca o livro no banco de dados atravéz do titulo
+    var livroExistente = repository.findByTitulo(livro.getTitulo());
+    // Verifica se o livro já existe
+    if (livroExistente != null) {
+      // Dispara uma excessão caso o livro já exista
+      throw new LivroAlreadyExistException("O livro com o titulo '" + livro.getTitulo() + "' já existe");
+    }
+    // Salva o livro no banco de dados
     return repository.save(livro);
   }
 
@@ -61,6 +78,14 @@ public class LivroSevice {
 
   // Deleta um livro do banco de dados
   public void deletar(Long id) {
+    // Busca o livro no banco de dados
+    Livro livroADeletar = buscarPorId(id);
+    // Verifica se o livro foi encontrado
+    if (livroADeletar == null) {
+      // Dispara uma excessão caso o livro não for encontrado
+      throw new LivroNotFoundException("O livro com o id '" + id + "' não foi encontrado");
+    }
+    // Deleta o livro do banco de dados
     repository.deleteById(id);
   }
 
